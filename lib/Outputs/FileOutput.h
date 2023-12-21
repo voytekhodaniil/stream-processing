@@ -18,3 +18,21 @@ public:
     delete output;
   }
 };
+
+template <typename F> class FileOutputLambda {
+  std::ofstream *output;
+  F f_;
+
+public:
+  FileOutputLambda(std::string path, F f) : f_(f) {
+    output = new std::ofstream(path);
+  }
+  template <typename T> T operator()(T data) {
+    f_(*output, data);
+    return data;
+  }
+  ~FileOutputLambda() {
+    output->close();
+    delete output;
+  }
+};

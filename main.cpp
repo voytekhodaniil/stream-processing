@@ -5,6 +5,7 @@
 #include "lib/Processing/FunctionWrapper.h"
 #include "lib/SyncProcessing.h"
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -37,18 +38,25 @@ public:
 };
 
 int main(int, char **) {
-  int v = 8841;
-  auto print_line = [v]<typename T>(T i) {
-    std::cout << v << ' ' << i << std::endl;
+  auto print_line = []<typename T>(T i) {
+    std::cout << i << std::endl;
     return i;
   };
 
-  SyncProcessing(new RangeInput(0, 10, 1),
-                 NewCompose<int>(                     //
-                     new SumCalls(0),                 //
-                     new FunctionWrapper(print_line), //
-                     new FileOutput("test.txt")       //
-                     ))
+  std::chrono::milliseconds timespan(10);
+  auto slow_task = new FunctionWrapper([timespan](int i) {
+    std::this_thread::sleep_for(timespan);
+    return i;
+  });
+
+  SyncProcessing(
+      new RangeInput(0, 100 + 1, 1),
+      NewCompose<int>(                     //
+          slow_task,                       //
+          new FunctionWrapper(print_line), //
+          new FileOutputLambda(
+              "test.txt", [](std::ofstream& f, int i) { f << i << '\n'; }) //
+          ))
       .run();
 
   // std::thread t1(processing, 20);
