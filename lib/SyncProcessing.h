@@ -3,11 +3,11 @@
 #include "Inputs/Input.h"
 
 template <typename Input, class Processing> class SyncProcessing {
-  Input* input;
-  Processing* processing;
+  Input *input;
+  Processing *processing;
 
 public:
-  SyncProcessing(Input* input_, Processing* processing_)
+  SyncProcessing(Input *input_, Processing *processing_)
       : input(input_), processing(processing_){};
 
   size_t run() {
@@ -20,10 +20,15 @@ public:
       if (!input_data.has_value())
         break;
 
-      auto output_data = processing(input_data.value());
+      auto output_data = (*processing)(input_data.value());
       ++count;
     }
     input->stop();
     return count;
+  }
+
+  ~SyncProcessing() {
+    delete processing;
+    delete input;
   }
 };

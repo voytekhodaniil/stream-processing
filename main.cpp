@@ -37,42 +37,19 @@ public:
 };
 
 int main(int, char **) {
-
-  // test_func(new FileOutput("test.txt"));
   int v = 8841;
   auto print_line = [v]<typename T>(T i) {
     std::cout << v << ' ' << i << std::endl;
     return i;
   };
 
-  // auto f = Compose<int>(new FunctionCall(a),                             //
-  //                       new FunctionCall([](int a) { return a * 123; }), //
-  //                       new FunctionCall(print_line),                    //
-  //                       new FileOutput("test.txt")                       //
-  // );
-  auto f = Compose<int>(new SumCalls(0), new FunctionWrapper(print_line));
-  auto f1 = f;
-  f(5);
-  f(10);
-  f(20);
-
-  f1(5);
-  // f1(5);
-  // f1(5);
-
-  // int sum = 5;
-
-  // auto interestingStage =
-  //     LambdaStage<int, int>::build([&sum](int input) -> int {
-  //       sum += 1;
-  //       return input * sum;
-  //     });
-
-  // Compose processing(interestingStage, print);
-  // //   std::cout << processing(1) << std::endl;
-  // //   std::cout << processing(1) << std::endl;
-  // //   std::cout << processing(1) << std::endl;
-  // //   std::cout << processing(1) << std::endl;
+  SyncProcessing(new RangeInput(0, 10, 1),
+                 NewCompose<int>(                     //
+                     new SumCalls(0),                 //
+                     new FunctionWrapper(print_line), //
+                     new FileOutput("test.txt")       //
+                     ))
+      .run();
 
   // std::thread t1(processing, 20);
   // std::thread t2(processing, 30);
@@ -84,17 +61,4 @@ int main(int, char **) {
   // std::chrono::milliseconds timespan(10); // or whatever
   // std::this_thread::sleep_for(timespan);
   // std::cout << "Done:\n";
-
-  // Task
-
-  // std::cout << SyncProcessing(RangeInput(0, 10, 1), //
-  //                             Compose(a, print,
-  //                                     LambdaStage<int, std::string>::build(
-  //                                         [](int input) -> std::string {
-  //                                           return std::to_string(input) +
-  //                                           '\n';
-  //                                         }),
-  //                                     FileOutput<std::string>("./test.txt")))
-  //                  .run()
-  //           << std::endl;
 }

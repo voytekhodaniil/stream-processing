@@ -39,3 +39,8 @@ template <typename T, typename F0, typename... F>
 ComposeClass<T, F0, F...> Compose(F0 *f0, F *...f) {
   return ComposeClass<T, F0, F...>(f0, f...);
 }
+
+template <typename T, typename F0, typename... F>
+ComposeClass<T, F0, F...> *NewCompose(F0 *f0, F *...f) {
+  return new ComposeClass<T, F0, F...>(f0, f...);
+}
