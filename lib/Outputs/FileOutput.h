@@ -15,8 +15,3 @@ public:
     return data;
   }
 };
-
-template <typename T> struct CallSignature<FileOutput<T>> {
-  using InputType = T;
-  using OutputType = T;
-};

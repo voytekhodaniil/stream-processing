@@ -22,6 +22,14 @@ std::string print_string(std::string p) {
 void task1(std::string msg) { std::cout << "task1 says: " << msg; }
 
 int main(int, char **) {
+  auto print_line = []<typename T>(T i) {
+    std::cout << i << std::endl;
+    return i;
+  };
+
+  Compose<int>(
+      a, print_line, [](int i) { return i * 10; }, print_line)(5);
+
   // int sum = 5;
 
   // auto interestingStage =
@@ -47,13 +55,16 @@ int main(int, char **) {
   // std::this_thread::sleep_for(timespan);
   // std::cout << "Done:\n";
 
-  std::cout << SyncProcessing(RangeInput(0, 10, 1), //
-                              Compose(a, print,
-                                      LambdaStage<int, std::string>::build(
-                                          [](int input) -> std::string {
-                                            return std::to_string(input) + '\n';
-                                          }),
-                                      FileOutput<std::string>("./test.txt")))
-                   .run()
-            << std::endl;
+  // Task
+
+  // std::cout << SyncProcessing(RangeInput(0, 10, 1), //
+  //                             Compose(a, print,
+  //                                     LambdaStage<int, std::string>::build(
+  //                                         [](int input) -> std::string {
+  //                                           return std::to_string(input) +
+  //                                           '\n';
+  //                                         }),
+  //                                     FileOutput<std::string>("./test.txt")))
+  //                  .run()
+  //           << std::endl;
 }
