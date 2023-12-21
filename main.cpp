@@ -2,6 +2,7 @@
 #include "lib/Inputs/FileInput.h"
 #include "lib/Inputs/RangeInput.h"
 #include "lib/Outputs/FileOutput.h"
+#include "lib/Processing/FunctionWrapper.h"
 #include "lib/SyncProcessing.h"
 #include <chrono>
 #include <iostream>
@@ -21,14 +22,43 @@ std::string print_string(std::string p) {
 
 void task1(std::string msg) { std::cout << "task1 says: " << msg; }
 
+void test_func(FileOutput *f) { (*f)(10); }
+
+template <typename T> class SumCalls {
+  T default_;
+
+public:
+  SumCalls(T base) : default_(base){};
+  T operator()(T value) {
+    T current = default_;
+    default_ = value;
+    return current;
+  }
+};
+
 int main(int, char **) {
-  auto print_line = []<typename T>(T i) {
-    std::cout << i << std::endl;
+
+  // test_func(new FileOutput("test.txt"));
+  int v = 8841;
+  auto print_line = [v]<typename T>(T i) {
+    std::cout << v << ' ' << i << std::endl;
     return i;
   };
 
-  Compose<int>(
-      a, print_line, [](int i) { return i * 10; }, print_line)(5);
+  // auto f = Compose<int>(new FunctionCall(a),                             //
+  //                       new FunctionCall([](int a) { return a * 123; }), //
+  //                       new FunctionCall(print_line),                    //
+  //                       new FileOutput("test.txt")                       //
+  // );
+  auto f = Compose<int>(new SumCalls(0), new FunctionWrapper(print_line));
+  auto f1 = f;
+  f(5);
+  f(10);
+  f(20);
+
+  f1(5);
+  // f1(5);
+  // f1(5);
 
   // int sum = 5;
 

@@ -1,17 +1,24 @@
 #pragma once
 #include "../Compose.h"
 #include <fstream>
+#include <iostream>
 #include <string>
 
-template <typename T> class FileOutput;
-
-template <> class FileOutput<std::string> {
-  std::fstream output;
+class FileOutput {
+  std::ofstream *output;
 
 public:
-  FileOutput(std::string path) { output = std::fstream(path); }
-  std::string operator()(std::string data) {
-    output << data;
+  FileOutput(std::string path) {
+    output = new std::ofstream(path);
+    std::cout << "Created" << std::endl;
+  }
+  template <typename T> T operator()(T data) {
+    *output << data;
     return data;
+  }
+  ~FileOutput() {
+    std::cout << "Deleted" << std::endl;
+    output->close();
+    delete output;
   }
 };
