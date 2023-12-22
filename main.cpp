@@ -3,11 +3,14 @@
 #include "lib/Inputs/FileInput.h"
 #include "lib/Inputs/RangeInput.h"
 #include "lib/Outputs/FileOutput.h"
+#include "lib/Outputs/LogOutput.h"
+#include "lib/Processing/Filter.h"
 #include "lib/Processing/FunctionWrapper.h"
 #include "lib/SyncProcessing.h"
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <thread>
 
@@ -39,10 +42,6 @@ public:
 };
 
 int main(int, char **) {
-  auto print_line = []<typename T>(T i) {
-    std::cout << i << std::endl;
-    return i;
-  };
 
   std::chrono::milliseconds timespan(10);
   auto slow_task = new FunctionWrapper([timespan](int i) {
@@ -50,24 +49,21 @@ int main(int, char **) {
     return i;
   });
 
+  auto filter_even = new LambdaFilter([](int i) { //
+    return (i % 2);
+  });
+
+  auto print_to_stdout = new FunctionWrapper([]<typename T>(T i) {
+    std::cout << i << std::endl;
+    return i;
+  });
+
   SyncProcessing(
       new RangeInput(0, 100 + 1, 1),
-      NewComposeTransform<int>(                     //
-          slow_task,                       //
-          new FunctionWrapper(print_line), //
+      NewComposeTransform<int>(         //
+          filter_even, new LogOutput(), //
           new FileOutputLambda(
-              "test.txt", [](std::ofstream& f, int i) { f << i << '\n'; }) //
+              "test.txt", [](std::ofstream &f, int i) { f << i << '\n'; }) //
           ))
       .run();
-
-  // std::thread t1(processing, 20);
-  // std::thread t2(processing, 30);
-  // std::thread t3(processing, 40);
-  // t1.detach();
-  // t2.detach();
-  // t3.detach();
-  // std::cout << "Sleep:\n";
-  // std::chrono::milliseconds timespan(10); // or whatever
-  // std::this_thread::sleep_for(timespan);
-  // std::cout << "Done:\n";
 }

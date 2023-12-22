@@ -3,15 +3,14 @@
 #include <functional>
 #include <optional>
 
-template <typename T> class CallTransformRealization {
+template <typename T> struct CallTransformRealization {
   using Output = T;
   template <typename F> static const void call(T data, F *next) {
     (*next)(data);
   }
 };
 
-template <typename T> class CallTransformRealization<std::optional<T>> {
-public:
+template <typename T> struct CallTransformRealization<std::optional<T>> {
   using Output = T;
 
   template <typename F> static const void call(std::optional<T> data, F *next) {
@@ -20,8 +19,7 @@ public:
   }
 };
 
-template <typename T> class CallTransformRealization<std::vector<T>> { // TODO: make universal for any iterable class
-public:
+template <typename T> struct CallTransformRealization<std::vector<T>> { // TODO: make universal for any iterable class
   using Output = T;
 
   template <typename F> static const void call(std::vector<T> data, F *next) {
@@ -42,7 +40,7 @@ public:
 
   void operator()(Input x) {
     CallTransformRealization<typename std::invoke_result<F0, T>::type>::call(
-        (*f0_)(x), tail_);
+        (*f0_)(x), &tail_);
   }
 
   ~ComposeTransformClass() { delete f0_; }
@@ -85,11 +83,11 @@ public:
 };
 
 template <typename T, typename F0, typename... F>
-ComposeTransformClass<T, F0, F...> ComposeTranform(F0 *f0, F *...f) {
+ComposeTransformClass<T, F0, F...> ComposeTransform(F0 *f0, F *...f) {
   return ComposeTransformClass<T, F0, F...>(f0, f...);
 }
 
 template <typename T, typename F0, typename... F>
-ComposeTransformClass<T, F0, F...> *NewComposeTranform(F0 *f0, F *...f) {
+ComposeTransformClass<T, F0, F...> *NewComposeTransform(F0 *f0, F *...f) {
   return new ComposeTransformClass<T, F0, F...>(f0, f...);
 }
