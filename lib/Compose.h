@@ -19,6 +19,8 @@ public:
   ComposeClass(ComposeClass<T, F0, F...> &old)
       : f0_(new F0(*old.f0_)), tail_(old.tail_) {}
   ComposeClass<T, F0, F...> &operator=(ComposeClass<T, F0, F...> &other) {
+    if (this == std::addressof(other))
+      return *this;
     delete f0_;
     f0_ = new F0(*other.f0_);
     tail_ = other.tail_;
@@ -40,6 +42,8 @@ public:
 
   ComposeClass(ComposeClass<T, F> &old) { f_ = new F(*old.f_); }
   ComposeClass<T, F> &operator=(ComposeClass<T, F> &other) {
+    if (this == std::addressof(other))
+      return *this;
     delete f_;
     f_ = new F(*other.f0_);
     return *this;

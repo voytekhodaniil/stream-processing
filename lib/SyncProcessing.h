@@ -20,7 +20,7 @@ public:
       if (!input_data.has_value())
         break;
 
-      auto output_data = (*processing)(input_data.value());
+      (*processing)(input_data.value());
       ++count;
     }
     input->stop();

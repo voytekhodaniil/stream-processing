@@ -1,4 +1,5 @@
 #include "lib/Compose.h"
+#include "lib/ComposeTransform.h"
 #include "lib/Inputs/FileInput.h"
 #include "lib/Inputs/RangeInput.h"
 #include "lib/Outputs/FileOutput.h"
@@ -51,7 +52,7 @@ int main(int, char **) {
 
   SyncProcessing(
       new RangeInput(0, 100 + 1, 1),
-      NewCompose<int>(                     //
+      NewComposeTransform<int>(                     //
           slow_task,                       //
           new FunctionWrapper(print_line), //
           new FileOutputLambda(
